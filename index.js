@@ -44,8 +44,8 @@ const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
  * @returns {string} one of the AVAILABLE_MOVES values
  */
 function computerPlay() {
-  // TODO
-  return AVAILABLE_MOVES[0];
+  const randomMoveIndex = Math.floor(Math.random() * AVAILABLE_MOVES.length);
+  return AVAILABLE_MOVES[randomMoveIndex];
 }
 
 /**
