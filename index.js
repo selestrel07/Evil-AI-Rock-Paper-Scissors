@@ -91,8 +91,8 @@ function normalizeInput(rawInput) {
  * @returns {string|null} the move, or null when the answer is not a valid move
  */
 function parseMove(rawInput) {
-  // TODO
-  return null;
+  const normalizedInput = normalizeInput(rawInput);
+  return AVAILABLE_MOVES.indexOf(normalizedInput) === -1 ? null : normalizedInput;
 }
 
 /**
