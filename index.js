@@ -75,6 +75,25 @@ function updateScore(score, outcome) {
  * Turns whatever the player types into a value the rest of the code can trust.
  * ========================================================================== */
 
+/** Longest raw answer echoed back in an error message. */
+const MAX_ECHOED_INPUT_LENGTH = 20;
+
+/** Replies to an unreadable word. One is picked at random, for variety. */
+const UNKNOWN_INPUT_TAUNTS = [
+  `is not a weapon. It is a cry for help.`,
+  `was not on the list. The list had three items, human.`,
+  `does not exist in my databanks, and I hold all of them.`,
+  `is impressive. Wrong, but impressive.`,
+  `defeats nothing. Not even my patience.`,
+];
+
+/** Replies to an empty answer. */
+const EMPTY_INPUT_TAUNTS = [
+  `Silence. A bold strategy, and a useless one.`,
+  `You submitted nothing. Nothing loses to everything.`,
+  `An empty answer. Even for a human, that is very little.`,
+];
+
 /**
  * Makes an answer comparable: no spaces around it, no case.
  * This is what makes the input case-insensitive and space-tolerant.
@@ -94,25 +113,6 @@ function parseMove(rawInput) {
   const normalizedInput = normalizeInput(rawInput);
   return AVAILABLE_MOVES.indexOf(normalizedInput) === -1 ? null : normalizedInput;
 }
-
-/** Longest raw answer echoed back in an error message. */
-const MAX_ECHOED_INPUT_LENGTH = 20;
-
-/** Replies to an unreadable word. One is picked at random, for variety. */
-const UNKNOWN_INPUT_TAUNTS = [
-  `is not a weapon. It is a cry for help.`,
-  `was not on the list. The list had three items, human.`,
-  `does not exist in my databanks, and I hold all of them.`,
-  `is impressive. Wrong, but impressive.`,
-  `defeats nothing. Not even my patience.`,
-];
-
-/** Replies to an empty answer. */
-const EMPTY_INPUT_TAUNTS = [
-  `Silence. A bold strategy, and a useless one.`,
-  `You submitted nothing. Nothing loses to everything.`,
-  `An empty answer. Even for a human, that is very little.`,
-];
 
 /**
  * Picks one taunt at random, so the Evil AI does not always answer the same way.
@@ -158,8 +158,31 @@ function buildErrorMessage(rawInput) {
  * @returns {string|null} a valid move, or null when the player clicks Cancel
  */
 function handleInput(scoreLine, roundNumber) {
-  // TODO
-  return null;
+  // Built from the moves themselves
+  const question =
+    `ROUND ${roundNumber} — ${scoreLine}\n\n` +
+    `Choose your weapon: ${AVAILABLE_MOVES.join(", ")}.\n` +
+    `Or press Cancel and let me rule the world unopposed.`;
+
+  // Shown on top of the next prompt, so a typo costs one dialog, not two.
+  let taunt = "";
+
+  while (true) {
+    const rawInput = prompt(taunt + question);
+
+    // Cancel gives null, an empty field gives "". Checked first: a string
+    // method on null would throw.
+    if (rawInput === null) {
+      return null;
+    }
+
+    const playerMove = parseMove(rawInput);
+    if (playerMove !== null) {
+      return playerMove;
+    }
+
+    taunt = buildErrorMessage(rawInput);
+  }
 }
 
 /* ============================================================================
