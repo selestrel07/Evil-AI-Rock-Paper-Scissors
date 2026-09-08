@@ -94,6 +94,9 @@ const EMPTY_INPUT_TAUNTS = [
   `An empty answer. Even for a human, that is very little.`,
 ];
 
+/** Reminder added to every error message, so an attempt is never mistaken for a round. */
+const SCORE_UNTOUCHED_NOTE = `\nThat attempt was not a round. Your score stands untouched.\n\n`;
+
 /**
  * Makes an answer comparable: no spaces around it, no case.
  * This is what makes the input case-insensitive and space-tolerant.
@@ -136,7 +139,7 @@ function buildErrorMessage(rawInput) {
   // ask again instead of ending the game.
   if (trimmedInput === "") {
     const reason = pickRandomTaunt(EMPTY_INPUT_TAUNTS);
-    return `${reason}\nThat attempt was not a round. Your score stands untouched.\n\n`;
+    return reason + SCORE_UNTOUCHED_NOTE;
   }
 
   // A long paste would make the dialog unreadable, so it is cut before being
@@ -147,7 +150,7 @@ function buildErrorMessage(rawInput) {
   }
 
   const reason = `"${echoedInput}" ${pickRandomTaunt(UNKNOWN_INPUT_TAUNTS)}`;
-  return `${reason}\nThat attempt was not a round. Your score stands untouched.\n\n`;
+  return reason + SCORE_UNTOUCHED_NOTE;
 }
 
 /**
