@@ -193,6 +193,13 @@ function handleInput(scoreLine, roundNumber) {
  * Everything the player reads.
  * ========================================================================== */
 
+/** What the Evil AI says after each round, one line per outcome. */
+const OUTCOME_TAUNTS = {
+  [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
+  [OUTCOMES.LOSE]: "The round is mine. As predicted, in nanoseconds.",
+  [OUTCOMES.DRAW]: "Same weapon. Even our mistakes match.",
+};
+
 /**
  * Capitalises a move for display. The stored value stays lowercase.
  * @param {string} move
@@ -233,11 +240,14 @@ function showIntro() {
  * @param {string} computerMove - move chosen by the computer
  * @param {string} outcome - one of the OUTCOMES values
  * @param {{player: number, computer: number}} score - score after the round
- * @returns {string}
  */
 function describeRound(playerMove, computerMove, outcome, score) {
-  // TODO
-  return "";
+  alert(
+    `You played ${formatMove(playerMove)}, ` +
+      `I played ${formatMove(computerMove)}.\n` +
+      `${OUTCOME_TAUNTS[outcome]}\n\n` +
+      `${formatScore(score)}`
+  );
 }
 
 /**
