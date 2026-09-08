@@ -95,6 +95,34 @@ function parseMove(rawInput) {
   return AVAILABLE_MOVES.indexOf(normalizedInput) === -1 ? null : normalizedInput;
 }
 
+/** Longest raw answer echoed back in an error message. */
+const MAX_ECHOED_INPUT_LENGTH = 20;
+
+/** Replies to an unreadable word. One is picked at random, for variety. */
+const UNKNOWN_INPUT_TAUNTS = [
+  `is not a weapon. It is a cry for help.`,
+  `was not on the list. The list had three items, human.`,
+  `does not exist in my databanks, and I hold all of them.`,
+  `is impressive. Wrong, but impressive.`,
+  `defeats nothing. Not even my patience.`,
+];
+
+/** Replies to an empty answer. */
+const EMPTY_INPUT_TAUNTS = [
+  `Silence. A bold strategy, and a useless one.`,
+  `You submitted nothing. Nothing loses to everything.`,
+  `An empty answer. Even for a human, that is very little.`,
+];
+
+/**
+ * Picks one taunt at random, so the Evil AI does not always answer the same way.
+ * @param {string[]} taunts
+ * @returns {string}
+ */
+function pickRandomTaunt(taunts) {
+  return taunts[Math.floor(Math.random() * taunts.length)];
+}
+
 /**
  * Builds the message shown after an answer that cannot be used.
  * It says what was wrong and that the score is untouched.
@@ -102,8 +130,24 @@ function parseMove(rawInput) {
  * @returns {string}
  */
 function buildErrorMessage(rawInput) {
-  // TODO
-  return "";
+  const trimmedInput = rawInput.trim();
+
+  // An empty field is not a cancelled prompt: the player clicked OK, so we
+  // ask again instead of ending the game.
+  if (trimmedInput === "") {
+    const reason = pickRandomTaunt(EMPTY_INPUT_TAUNTS);
+    return `${reason}\nThat attempt was not a round. Your score stands untouched.\n\n`;
+  }
+
+  // A long paste would make the dialog unreadable, so it is cut before being
+  // shown back to the player.
+  let echoedInput = trimmedInput;
+  if (echoedInput.length > MAX_ECHOED_INPUT_LENGTH) {
+    echoedInput = `${echoedInput.slice(0, MAX_ECHOED_INPUT_LENGTH)}...`;
+  }
+
+  const reason = `"${echoedInput}" ${pickRandomTaunt(UNKNOWN_INPUT_TAUNTS)}`;
+  return `${reason}\nThat attempt was not a round. Your score stands untouched.\n\n`;
 }
 
 /**
