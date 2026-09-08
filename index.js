@@ -76,14 +76,13 @@ function updateScore(score, outcome) {
  * ========================================================================== */
 
 /**
- * Makes an answer comparable: no outer spaces, no case, no double spaces.
+ * Makes an answer comparable: no spaces around it, no case.
  * This is what makes the input case-insensitive and space-tolerant.
  * @param {string} rawInput - exactly what the player typed
  * @returns {string}
  */
 function normalizeInput(rawInput) {
-  // TODO
-  return rawInput;
+  return rawInput.trim().toLowerCase();
 }
 
 /**
