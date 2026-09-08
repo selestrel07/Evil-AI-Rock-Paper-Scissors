@@ -140,8 +140,13 @@ function formatMove(move) {
  * @returns {string}
  */
 function formatScore(score) {
-  // TODO
-  return "";
+  let scoreString = `Total score: Player - ${score.player}, Evil AI - ${score.computer}.`;
+  if (score.player > score.computer) {
+    scoreString += "\nEnjoy your lead, human… I'm right behind you."
+  } else {
+    scoreString += '\nMuahahaha! Look at that score, human… victory is within my grasp!'
+  }
+  return scoreString;
 }
 
 /**
