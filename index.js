@@ -206,8 +206,7 @@ const OUTCOME_TAUNTS = {
  * @returns {string}
  */
 function formatMove(move) {
-  // TODO
-  return move;
+  return move.charAt(0).toUpperCase() + move.slice(1);
 }
 
 /**
