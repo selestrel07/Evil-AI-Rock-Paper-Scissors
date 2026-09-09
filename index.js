@@ -76,7 +76,16 @@ function playRound(playerMove, computerMove) {
  * @param {string} outcome - one of the OUTCOMES values
  */
 function updateScore(score, outcome) {
-  // TODO
+  switch (outcome) {
+    case OUTCOMES.WIN: {
+      score.player = score.player + 1;
+      break
+    }
+    case OUTCOMES.LOSE: {
+      score.computer = score.computer + 1;
+      break;
+    }
+  }
 }
 
 /* ============================================================================
