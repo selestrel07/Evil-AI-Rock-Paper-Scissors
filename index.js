@@ -57,8 +57,17 @@ function computerPlay() {
  * @returns {string} one of the OUTCOMES values
  */
 function playRound(playerMove, computerMove) {
-  // TODO
-  return OUTCOMES.DRAW;
+  if (playerMove === computerMove) {
+    return OUTCOMES.DRAW;
+  }
+
+  // BEATEN_MOVE contains the winning matchup for each move.
+  // If the player's move beats the computer's, the player wins.
+  if (BEATEN_MOVE[playerMove] === computerMove) {
+    return OUTCOMES.WIN;
+  }
+
+  return OUTCOMES.LOSE;
 }
 
 /**
