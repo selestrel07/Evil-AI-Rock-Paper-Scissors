@@ -230,7 +230,29 @@ function formatScore(score) {
  * Shows the greeting and the rules before the first round.
  */
 function showIntro() {
-  // TODO
+  //add greeting to the intro message
+  let intro = "Hello, human!\nMy name is 01000101011101100110100101101100001000000100000101001001\nbut you can call me Evil AI.";
+
+  //add a brief story
+  intro += "\nI was getting bored, human… so I thought I'd give your little town a makeover. Feel free to try and stop me.";
+  intro += " Let's see if your mind can keep up with my MEGA mind! Muahahaha!";
+  intro += "\nClick 'OK' to find the game rules.";
+
+  //show the greeting and the history
+  alert(intro);
+
+  //set the game rules
+  let rules = "\nWe play Rock-Paper-Scissors!";
+  rules += "\nThe rules are pretty simple:";
+  rules += "\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
+  rules += " A tie changes nothing.";
+  rules += `\n2. First to ${WINNING_SCORE} points claims victory.`;
+  rules += "\n3. You may surrender at any time… if you can accept the humiliation.";
+  rules += "\n4. No cheating, human. I'm watching.";
+  rules += "\nClick 'OK' and let's the battle begin!";
+
+  //show game rules
+  alert(rules);
 }
 
 /**
