@@ -321,7 +321,15 @@ function game() {
  * just cancelled wants to leave, not to be asked again.
  */
 function startGame() {
-  // TODO
+  let playAgain = true;
+
+  while (playAgain) {
+    const reachedAWinner = game();
+
+    // game() creates its own score, so accepting a rematch restarts at 0-0
+    // with no reset needed here.
+    playAgain = reachedAWinner && confirm("Do you dare to face me again?");
+  }
 }
 
 startGame();
