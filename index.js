@@ -285,7 +285,7 @@ function announceWinner(score) {
         + "\nVery well, human. Your town survives… this time. Enjoy your victory while you can."
       : 'Game over, human. I predicted you… every step of the way.'
         + '\nYour town survives… for now. Consider that a gift from your new ruler.'}` +
-    "\n\nPress 'OK' to finish the round."
+    "\n\nClick 'OK' to end the battle, human."
   )
 }
 
