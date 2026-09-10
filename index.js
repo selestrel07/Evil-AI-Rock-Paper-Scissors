@@ -79,7 +79,7 @@ function updateScore(score, outcome) {
   switch (outcome) {
     case OUTCOMES.WIN: {
       score.player = score.player + 1;
-      break
+      break;
     }
     case OUTCOMES.LOSE: {
       score.computer = score.computer + 1;
