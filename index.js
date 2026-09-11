@@ -9,7 +9,7 @@ const WINNING_SCORE = 3;
 
 /*
  * The rules of the game: each move points to the move it defeats.
- * This is the only place where the moves are defined, so adding a move   
+ * This is the only place where the moves are defined, so adding a move
  * here is enough for the whole program to know about it.
  */
 const BEATEN_MOVE = {
@@ -31,7 +31,7 @@ const OUTCOMES = {
 /*
  * The score that a game starts with. Frozen so it can never be modified by accident:
  * game() copies it instead, which is what makes a rematch restart at 0-0.
-*/
+ */
 const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
 
 /* ============================================================================
@@ -108,7 +108,7 @@ const UNKNOWN_INPUT_TAUNTS = [
 const EMPTY_INPUT_TAUNTS = [
   `Silence. A bold strategy, and a useless one.`,
   `You submitted nothing. Nothing loses to everything.`,
-  `An empty answer. Even for a human, that is very little.`,
+  `An empty answer. Even for a human, that is strange behaviour.`,
 ];
 
 /* Reminder added to every error message, so an attempt is never mistaken for a round. */
@@ -152,7 +152,7 @@ function pickRandomTaunt(taunts) {
 function buildErrorMessage(rawInput) {
   const trimmedInput = rawInput.trim();
 
-  // An empty field is not a cancelled prompt: the player clicked OK, 
+  // An empty field is not a cancelled prompt: the player clicked OK,
   // so we ask again instead of ending the game.
   if (trimmedInput === "") {
     const reason = pickRandomTaunt(EMPTY_INPUT_TAUNTS);
@@ -213,8 +213,8 @@ function handleInput(scoreLine, roundNumber) {
 /** What the Evil AI says after each round, one line per outcome. */
 const OUTCOME_TAUNTS = {
   [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
-  [OUTCOMES.LOSE]: "The round is mine. As predicted, in nanoseconds.",
-  [OUTCOMES.DRAW]: "Same weapon. Even our mistakes match.",
+  [OUTCOMES.LOSE]: "The round is mine. You had no chance against my superior capabilities.",
+  [OUTCOMES.DRAW]: "Same weapon. This round will not be counted.",
 };
 
 /**
@@ -239,31 +239,30 @@ function formatScore(score) {
  * Shows the greeting and the rules before the first round.
  */
 function showIntro() {
-  //add greeting to the intro message
-  const intro = `Hello, human!
-  My name is 01000101011101100110100101101100001000000100000101001001
-  but you can call me Evil AI.
+  const intro = `
+I am an Evil AI. I was getting bored, human…so I thought I'd give your little town a makeover.
+Feel free to try and stop me. Let's see if your mind can keep up with my mine!
+Muahahaha!
 
-  I was getting bored, human… so I thought I'd give your little town a makeover.
-  Feel free to try and stop me. Let's see if your mind can keep up with my MEGA mind!
-  Muahahaha!
+Everything happens in this box — you need nothing else.
+If you see "Don't allow this site to prompt you again" on the screen later, do not tick it, or your browser may stop the game.
 
-  Click 'OK' to find the game rules.`;
+Click 'OK' to read the game rules.`;
 
-  //show the greeting and the history
+  // show the greeting and story.
   alert(intro);
 
-  //set the game rules
-  let rules = "\nWe play Rock-Paper-Scissors!";
-  rules += "\nThe rules are pretty simple:";
-  rules += "\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
+  // set the game rules
+  let rules = "\nWe will play Rock-Paper-Scissors!";
+  rules += "\n\nThe rules are pretty simple:";
+  rules += "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
   rules += " A tie changes nothing.";
   rules += `\n2. First to ${WINNING_SCORE} points claims victory.`;
-  rules += "\n3. You may surrender at any time… if you can accept the humiliation.";
+  rules += "\n3. You may surrender at any time…if you can accept the humiliation.";
   rules += "\n4. No cheating, human. I'm watching.";
-  rules += "\nClick 'OK' and let's the battle begin!";
+  rules += "\n\nClick 'OK' and let the battle begin!";
 
-  //show game rules
+  // set game rules
   alert(rules);
 }
 
@@ -277,12 +276,21 @@ function showIntro() {
 function describeRound(playerMove, computerMove, outcome, score) {
   let scoreString = "";
 
-  if (score.player > score.computer) {
-    scoreString += "\nEnjoy your lead, human… I'm right behind you."
-  } else if (score.player < score.computer) {
-    scoreString += '\nMuahahaha! Look at that score, human… victory is within my grasp!'
-  } else {
-    scoreString += '\nA draw? How… disappointing, human. Neither of us has won yet.'
+  const gameIsOver =
+    score.player === WINNING_SCORE ||
+    score.computer === WINNING_SCORE;
+
+  // Only show the ordinary score taunt while the game is still in progress.
+  if (!gameIsOver) {
+    if (score.player > score.computer) {
+      scoreString = "\nEnjoy your lead, human… I'm right behind you.";
+    } else if (score.player < score.computer) {
+      scoreString =
+        "\nMuahahaha! Look at that score, human…victory is within my grasp!";
+    } else {
+      scoreString =
+        "\nA draw? How…disappointing, human. Neither of us has won yet.";
+    }
   }
 
   alert(
@@ -299,14 +307,16 @@ function describeRound(playerMove, computerMove, outcome, score) {
  */
 function announceWinner(score) {
   alert(
-    `${formatScore(score)}` +
-    `\n\n${score.player === WINNING_SCORE
-      ? "You won… this time. I'll remember every move you made."
-        + "\nVery well, human. Your town survives… this time. Enjoy your victory while you can."
-      : 'Game over, human. I predicted you… every step of the way.'
-        + '\nYour town survives… for now. Consider that a gift from your new ruler.'}` +
-    "\n\nClick 'OK' to end the battle, human."
-  )
+    formatScore(score) +
+      "\n\n" +
+      (score.player === WINNING_SCORE
+        ? "You won…this time. Don't get too comfortable.\n" +
+          "Very well, human. Your town survives…for now. Enjoy your victory while you can."
+        : "Game over, human. I predicted your moves…every step of the way.\n" +
+          "Your town survives…for now. Consider that a gift from your new ruler.") +
+      "\n\n" +
+      "Click 'OK' to end the battle, human."
+  );
 }
 
 /* ============================================================================
@@ -328,6 +338,11 @@ function game() {
     const playerMove = handleInput(scoreLine, roundNumber);
 
     if (playerMove === null) {
+      alert(
+        `${formatScore(score)}\n\n` +
+          "Leaving already, human? Very well. " +
+          "I'll consider this an extremely suspicious surrender."
+      );
       return false;
     }
 
@@ -357,7 +372,7 @@ function startGame() {
   while (playAgain) {
     const reachedAWinner = game();
 
-    // game() creates its own score, so accepting a rematch 
+    // game() creates its own score, so accepting a rematch
     // restarts at 0-0 with no reset needed here.
     playAgain = reachedAWinner && confirm("Do you dare to face me again?");
   }
