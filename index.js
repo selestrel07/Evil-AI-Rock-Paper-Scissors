@@ -131,7 +131,9 @@ function normalizeInput(rawInput) {
  */
 function parseMove(rawInput) {
   const normalizedInput = normalizeInput(rawInput);
-  return AVAILABLE_MOVES.indexOf(normalizedInput) === -1 ? null : normalizedInput;
+  return AVAILABLE_MOVES.indexOf(normalizedInput) === -1
+    ? null
+    : normalizedInput;
 }
 
 /**
@@ -213,7 +215,8 @@ function handleInput(scoreLine, roundNumber) {
 /** What the Evil AI says after each round, one line per outcome. */
 const OUTCOME_TAUNTS = {
   [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
-  [OUTCOMES.LOSE]: "The round is mine. You had no chance against my superior capabilities.",
+  [OUTCOMES.LOSE]:
+    "The round is mine. You had no chance against my superior capabilities.",
   [OUTCOMES.DRAW]: "Same weapon. This round will not be counted.",
 };
 
@@ -255,10 +258,12 @@ Click 'OK' to read the game rules.`;
   // set the game rules
   let rules = "\nWe will play Rock-Paper-Scissors!";
   rules += "\n\nThe rules are pretty simple:";
-  rules += "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
+  rules +=
+    "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
   rules += " A tie changes nothing.";
   rules += `\n2. First to ${WINNING_SCORE} points claims victory.`;
-  rules += "\n3. You may surrender at any time…if you can accept the humiliation.";
+  rules +=
+    "\n3. You may surrender at any time…if you can accept the humiliation.";
   rules += "\n4. No cheating, human. I'm watching.";
   rules += "\n\nClick 'OK' and let the battle begin!";
 
@@ -277,8 +282,7 @@ function describeRound(playerMove, computerMove, outcome, score) {
   let scoreString = "";
 
   const gameIsOver =
-    score.player === WINNING_SCORE ||
-    score.computer === WINNING_SCORE;
+    score.player === WINNING_SCORE || score.computer === WINNING_SCORE;
 
   // Only show the ordinary score taunt while the game is still in progress.
   if (!gameIsOver) {
@@ -297,7 +301,8 @@ function describeRound(playerMove, computerMove, outcome, score) {
     `You played ${formatMove(playerMove)}, ` +
       `I played ${formatMove(computerMove)}.\n` +
       `${OUTCOME_TAUNTS[outcome]}\n\n` +
-      `${formatScore(score)}` + scoreString
+      `${formatScore(score)}` +
+      scoreString
   );
 }
 
