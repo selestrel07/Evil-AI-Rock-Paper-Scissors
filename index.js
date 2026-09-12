@@ -1,79 +1,36 @@
 "use strict";
 
-/* ============================================================================
- * VARIABLES
- * ========================================================================== */
-
-/* Number of rounds a side must win to end the game. */
 const WINNING_SCORE = 3;
 
-/*
- * The rules of the game: each move points to the move it defeats.
- * This is the only place where the moves are defined, so adding a move
- * here is enough for the whole program to know about it.
- */
 const BEATEN_MOVE = {
   rock: "scissors",
   paper: "rock",
   scissors: "paper",
 };
 
-/* The three moves as an array, derived from the rules above. */
 const AVAILABLE_MOVES = Object.keys(BEATEN_MOVE);
 
-/* Possible results of a round, always seen from the player's side. */
 const OUTCOMES = {
   WIN: "win",
   LOSE: "lose",
   DRAW: "draw",
 };
 
-/*
- * The score that a game starts with. Frozen so it can never be modified by accident:
- * game() copies it instead, which is what makes a rematch restart at 0-0.
- */
 const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
 
-/* =================
- * UTILITY FUNCTIONS
- * ================ */
-
-/**
- * Returns a random array index
- * @param {*[]} array
- * @returns {number}
- */
 function getRandomArrayIndex(array) {
   return Math.floor(Math.random() * array.length);
 }
 
-/* ============================================================================
- * GAME LOGIC
- * These functions compute results. They never show anything to the player.
- * ========================================================================== */
-
-/**
- * Selects a random move for the computer.
- * @returns {string} - one of the AVAILABLE_MOVES values
- */
 function computerPlay() {
   return AVAILABLE_MOVES[getRandomArrayIndex(AVAILABLE_MOVES)];
 }
 
-/**
- * Plays a single round and returns its result.
- * This function only compares the two moves: it does not update the score.
- * @param {string} playerMove - move chosen by the player
- * @param {string} computerMove - move chosen by the computer
- * @returns {string} - one of the OUTCOMES values
- */
 function playRound(playerMove, computerMove) {
   if (playerMove === computerMove) {
     return OUTCOMES.DRAW;
   }
 
-  // BEATEN_MOVE contains the winning matchup for each move.
-  // If the player's move beats the computer's, the player wins.
   if (BEATEN_MOVE[playerMove] === computerMove) {
     return OUTCOMES.WIN;
   }
@@ -81,11 +38,6 @@ function playRound(playerMove, computerMove) {
   return OUTCOMES.LOSE;
 }
 
-/**
- * Adds the point of a round to the winning side. A draw awards nothing.
- * @param {{player: number, computer: number}} score - modified in place
- * @param {string} outcome - one of the OUTCOMES values
- */
 function updateScore(score, outcome) {
   switch (outcome) {
     case OUTCOMES.WIN: {
@@ -99,15 +51,8 @@ function updateScore(score, outcome) {
   }
 }
 
-/* ============================================================================
- * USER INPUT VALIDATION
- * Turns whatever the player types into a value the rest of the code can trust.
- * ========================================================================== */
-
-/* Maximum number of characters of a user's invalid input that will be echoed back to the user in an error message. */
 const MAX_ECHOED_INPUT_LENGTH = 20;
 
-/* Replies to an unreadable word. One is picked at random, for variety. */
 const UNKNOWN_INPUT_TAUNTS = [
   `is not a weapon. It is a cry for help.`,
   `was not on the list. The list had three items, human.`,
@@ -116,31 +61,18 @@ const UNKNOWN_INPUT_TAUNTS = [
   `defeats nothing. Not even my patience.`,
 ];
 
-/* Replies to an empty answer. */
 const EMPTY_INPUT_TAUNTS = [
   `Silence. A bold strategy, and a useless one.`,
   `You submitted nothing. Nothing loses to everything.`,
   `An empty answer. Even for a human, that is strange behaviour.`,
 ];
 
-/* Reminder added to every error message, so an attempt is never mistaken for a round. */
 const SCORE_UNTOUCHED_NOTE = `\nThat attempt was not a round. Your score stands untouched.\n\n`;
 
-/**
- * Makes an answer comparable: no spaces around it, resolved to lowercase.
- * This is what makes the input case-insensitive and space-tolerant.
- * @param {string} rawInput - exactly what the player typed
- * @returns {string}
- */
 function normalizeInput(rawInput) {
   return rawInput.trim().toLowerCase();
 }
 
-/**
- * Converts a raw answer into a valid move.
- * @param {string} rawInput - exactly what the player typed
- * @returns {string|null} the move, or null when the answer is not a valid move
- */
 function parseMove(rawInput) {
   const normalizedInput = normalizeInput(rawInput);
   return AVAILABLE_MOVES.indexOf(normalizedInput) === -1
@@ -148,33 +80,18 @@ function parseMove(rawInput) {
     : normalizedInput;
 }
 
-/**
- * Picks one taunt at random, so the Evil AI does not always answer the same way.
- * @param {string[]} taunts
- * @returns {string}
- */
 function pickRandomTaunt(taunts) {
   return taunts[getRandomArrayIndex(taunts)];
 }
 
-/**
- * Builds the message that is shown after an answer that cannot be used.
- * It says what was wrong and that the score is untouched.
- * @param {string} rawInput - exactly what the player typed
- * @returns {string}
- */
 function buildErrorMessage(rawInput) {
   const trimmedInput = rawInput.trim();
 
-  // An empty field is not a cancelled prompt: the player clicked OK,
-  // so we ask again instead of ending the game.
   if (trimmedInput === "") {
     const reason = pickRandomTaunt(EMPTY_INPUT_TAUNTS);
     return reason + SCORE_UNTOUCHED_NOTE;
   }
 
-  // A long paste would make the dialog unreadable, so it is cut
-  // before being shown back to the player.
   let echoedInput = trimmedInput;
   if (echoedInput.length > MAX_ECHOED_INPUT_LENGTH) {
     echoedInput = `${echoedInput.slice(0, MAX_ECHOED_INPUT_LENGTH)}...`;
@@ -184,28 +101,17 @@ function buildErrorMessage(rawInput) {
   return reason + SCORE_UNTOUCHED_NOTE;
 }
 
-/**
- * Asks for a move until the answer is valid or the player gives up.
- * An invalid answer never leaves this function, so it can never score a point.
- * @param {string} scoreLine - current score, shown for context in the question
- * @param {number} roundNumber - number of the round being played
- * @returns {string|null} a valid move, or null when the player clicks Cancel
- */
 function handleInput(scoreLine, roundNumber) {
-  // Built from the moves themselves
   const question =
     `ROUND ${roundNumber} — ${scoreLine}\n\n` +
     `Choose your weapon: ${AVAILABLE_MOVES.join(", ")}.\n` +
     `Or press Cancel and let me rule the world unopposed.`;
 
-  // Shown on top of the next prompt, so a typo costs one dialog, not two.
   let taunt = "";
 
   while (true) {
     const rawInput = prompt(taunt + question);
 
-    // Cancel gives null, an empty field gives "". Checked first: a string
-    // method on null would throw.
     if (rawInput === null) {
       return null;
     }
@@ -219,12 +125,6 @@ function handleInput(scoreLine, roundNumber) {
   }
 }
 
-/* ============================================================================
- * PLAYER MESSAGES
- * Everything the player reads.
- * ========================================================================== */
-
-/** What the Evil AI says after each round, one line per outcome. */
 const OUTCOME_TAUNTS = {
   [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
   [OUTCOMES.LOSE]:
@@ -232,27 +132,14 @@ const OUTCOME_TAUNTS = {
   [OUTCOMES.DRAW]: "Same weapon. This round will not be counted.",
 };
 
-/**
- * Capitalises a move for display. The stored value stays lowercase.
- * @param {string} move
- * @returns {string}
- */
 function formatMove(move) {
   return move.charAt(0).toUpperCase() + move.slice(1);
 }
 
-/**
- * Renders the score as one readable line, reused in every message.
- * @param {{player: number, computer: number}} score
- * @returns {string}
- */
 function formatScore(score) {
   return `Current score: Player - ${score.player}, Evil AI - ${score.computer}.`;
 }
 
-/**
- * Shows the greeting and the rules before the first round.
- */
 function showIntro() {
   const intro = `
 Hello...human. I am 010001010111011 but you can call me Evil AI. I was getting bored so I thought I'd give your little town a makeover.
@@ -264,10 +151,8 @@ If you see "Don't allow this site to prompt you again" on the screen later, do n
 
 Click 'OK' to read the game rules.`;
 
-  // show the greeting and story.
   alert(intro);
 
-  // set the game rules
   let rules = "\nWe will play Rock-Paper-Scissors!";
   rules += "\n\nThe rules are pretty simple:";
   rules +=
@@ -279,24 +164,15 @@ Click 'OK' to read the game rules.`;
   rules += "\n4. No cheating, human. I'm watching.";
   rules += "\n\nClick 'OK' and let the battle begin!";
 
-  // set game rules
   alert(rules);
 }
 
-/**
- * Builds the recap of a round: both moves, the verdict and the score.
- * @param {string} playerMove - move chosen by the player
- * @param {string} computerMove - move chosen by the computer
- * @param {string} outcome - one of the OUTCOMES values
- * @param {{player: number, computer: number}} score - score after the round
- */
 function describeRound(playerMove, computerMove, outcome, score) {
   let scoreString = "";
 
   const gameIsOver =
     score.player === WINNING_SCORE || score.computer === WINNING_SCORE;
 
-  // Only show the ordinary score taunt while the game is still in progress.
   if (!gameIsOver) {
     if (score.player > score.computer) {
       scoreString = "\nEnjoy your lead, human… I'm right behind you.";
@@ -318,10 +194,6 @@ function describeRound(playerMove, computerMove, outcome, score) {
   );
 }
 
-/**
- * Shows the final score and announces the winner.
- * @param {{player: number, computer: number}} score - final score
- */
 function announceWinner(score) {
   alert(
     formatScore(score) +
@@ -336,16 +208,6 @@ function announceWinner(score) {
   );
 }
 
-/* ============================================================================
- * GAME FLOW
- * ========================================================================== */
-
-/**
- * Runs one complete game: rounds, score and end of game.
- * The score is created here, so every game starts from zero.
- * @returns {boolean} true when a side reached WINNING_SCORE,
- *                    false when the player left with Cancel
- */
 function game() {
   const score = { ...INITIAL_SCORE };
   let roundNumber = 1;
@@ -376,11 +238,6 @@ function game() {
   return true;
 }
 
-/*
- * Entry point.
- * Offers a rematch only after a game that reached a winner: a player who
- * just cancelled wants to leave, not to be asked again.
- */
 function startGame() {
   showIntro();
 
@@ -389,8 +246,6 @@ function startGame() {
   while (playAgain) {
     const reachedAWinner = game();
 
-    // game() creates its own score, so accepting a rematch
-    // restarts at 0-0 with no reset needed here.
     playAgain = reachedAWinner && confirm("Do you dare to face me again?");
   }
 }
