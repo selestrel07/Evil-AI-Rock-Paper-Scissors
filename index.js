@@ -4,13 +4,13 @@
  * VARIABLES
  * ========================================================================== */
 
-/** Number of rounds a side must win to end the game. */
+/* Number of rounds a side must win to end the game. */
 const WINNING_SCORE = 3;
 
-/**
+/*
  * The rules of the game: each move points to the move it defeats.
- * This is the only place where the moves are listed, so adding a move here
- * is enough for the whole program to know about it.
+ * This is the only place where the moves are defined, so adding a move
+ * here is enough for the whole program to know about it.
  */
 const BEATEN_MOVE = {
   rock: "scissors",
@@ -18,18 +18,18 @@ const BEATEN_MOVE = {
   scissors: "paper",
 };
 
-/** The three moves as a list, derived from the rules above. */
+/* The three moves as an array, derived from the rules above. */
 const AVAILABLE_MOVES = Object.keys(BEATEN_MOVE);
 
-/** Possible results of a round, always seen from the player's side. */
+/* Possible results of a round, always seen from the player's side. */
 const OUTCOMES = {
   WIN: "win",
   LOSE: "lose",
   DRAW: "draw",
 };
 
-/**
- * Score a game starts with. Frozen so it can never be modified by accident:
+/*
+ * The score that a game starts with. Frozen so it can never be modified by accident:
  * game() copies it instead, which is what makes a rematch restart at 0-0.
  */
 const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
@@ -41,7 +41,7 @@ const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
 
 /**
  * Selects a random move for the computer.
- * @returns {string} one of the AVAILABLE_MOVES values
+ * @returns {string} - one of the AVAILABLE_MOVES values
  */
 function computerPlay() {
   const randomMoveIndex = Math.floor(Math.random() * AVAILABLE_MOVES.length);
@@ -50,11 +50,10 @@ function computerPlay() {
 
 /**
  * Plays a single round and returns its result.
- * This function only compares the two moves: it does not touch the score
- * and shows nothing. game() does both, using the returned value.
+ * This function only compares the two moves: it does not update the score.
  * @param {string} playerMove - move chosen by the player
  * @param {string} computerMove - move chosen by the computer
- * @returns {string} one of the OUTCOMES values
+ * @returns {string} - one of the OUTCOMES values
  */
 function playRound(playerMove, computerMove) {
   if (playerMove === computerMove) {
@@ -89,14 +88,14 @@ function updateScore(score, outcome) {
 }
 
 /* ============================================================================
- * USER INPUT
+ * USER INPUT VALIDATION
  * Turns whatever the player types into a value the rest of the code can trust.
  * ========================================================================== */
 
-/** Longest raw answer echoed back in an error message. */
+/* Maximum number of characters of a user's invalid input that will be echoed back to the user in an error message. */
 const MAX_ECHOED_INPUT_LENGTH = 20;
 
-/** Replies to an unreadable word. One is picked at random, for variety. */
+/* Replies to an unreadable word. One is picked at random, for variety. */
 const UNKNOWN_INPUT_TAUNTS = [
   `is not a weapon. It is a cry for help.`,
   `was not on the list. The list had three items, human.`,
@@ -105,18 +104,18 @@ const UNKNOWN_INPUT_TAUNTS = [
   `defeats nothing. Not even my patience.`,
 ];
 
-/** Replies to an empty answer. */
+/* Replies to an empty answer. */
 const EMPTY_INPUT_TAUNTS = [
   `Silence. A bold strategy, and a useless one.`,
   `You submitted nothing. Nothing loses to everything.`,
-  `An empty answer. Even for a human, that is very little.`,
+  `An empty answer. Even for a human, that is strange behaviour.`,
 ];
 
-/** Reminder added to every error message, so an attempt is never mistaken for a round. */
+/* Reminder added to every error message, so an attempt is never mistaken for a round. */
 const SCORE_UNTOUCHED_NOTE = `\nThat attempt was not a round. Your score stands untouched.\n\n`;
 
 /**
- * Makes an answer comparable: no spaces around it, no case.
+ * Makes an answer comparable: no spaces around it, resolved to lowercase.
  * This is what makes the input case-insensitive and space-tolerant.
  * @param {string} rawInput - exactly what the player typed
  * @returns {string}
@@ -145,7 +144,7 @@ function pickRandomTaunt(taunts) {
 }
 
 /**
- * Builds the message shown after an answer that cannot be used.
+ * Builds the message that is shown after an answer that cannot be used.
  * It says what was wrong and that the score is untouched.
  * @param {string} rawInput - exactly what the player typed
  * @returns {string}
@@ -153,15 +152,15 @@ function pickRandomTaunt(taunts) {
 function buildErrorMessage(rawInput) {
   const trimmedInput = rawInput.trim();
 
-  // An empty field is not a cancelled prompt: the player clicked OK, so we
-  // ask again instead of ending the game.
+  // An empty field is not a cancelled prompt: the player clicked OK,
+  // so we ask again instead of ending the game.
   if (trimmedInput === "") {
     const reason = pickRandomTaunt(EMPTY_INPUT_TAUNTS);
     return reason + SCORE_UNTOUCHED_NOTE;
   }
 
-  // A long paste would make the dialog unreadable, so it is cut before being
-  // shown back to the player.
+  // A long paste would make the dialog unreadable, so it is cut
+  // before being shown back to the player.
   let echoedInput = trimmedInput;
   if (echoedInput.length > MAX_ECHOED_INPUT_LENGTH) {
     echoedInput = `${echoedInput.slice(0, MAX_ECHOED_INPUT_LENGTH)}...`;
@@ -214,8 +213,8 @@ function handleInput(scoreLine, roundNumber) {
 /** What the Evil AI says after each round, one line per outcome. */
 const OUTCOME_TAUNTS = {
   [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
-  [OUTCOMES.LOSE]: "The round is mine. As predicted, in nanoseconds.",
-  [OUTCOMES.DRAW]: "Same weapon. Even our mistakes match.",
+  [OUTCOMES.LOSE]: "The round is mine. You had no chance against my superior capabilities.",
+  [OUTCOMES.DRAW]: "Same weapon. This round will not be counted.",
 };
 
 /**
@@ -233,45 +232,37 @@ function formatMove(move) {
  * @returns {string}
  */
 function formatScore(score) {
-  let scoreString = `Total score: Player - ${score.player}, Evil AI - ${score.computer}.`;
-  if (score.player !== WINNING_SCORE && score.computer !== WINNING_SCORE) {
-    if (score.player > score.computer) {
-      scoreString += "\nEnjoy your lead, human… I'm right behind you."
-    } else if (score.player < score.computer) {
-      scoreString += '\nMuahahaha! Look at that score, human… victory is within my grasp!'
-    } else {
-      scoreString += '\nA draw? How… disappointing, human. Neither of us has won yet.'
-    }
-  }
-  return scoreString;
+  return `Current score: Player - ${score.player}, Evil AI - ${score.computer}.`;
 }
 
 /**
  * Shows the greeting and the rules before the first round.
  */
 function showIntro() {
-  //add greeting to the intro message
-  let intro = "Hello, human!\nMy name is 01000101011101100110100101101100001000000100000101001001\nbut you can call me Evil AI.";
+  const intro = `
+Hello...human. I am 010001010111011 but you can call me Evil AI. I was getting bored so I thought I'd give your little town a makeover.
 
-  //add a brief story
-  intro += "\nI was getting bored, human… so I thought I'd give your little town a makeover. Feel free to try and stop me.";
-  intro += " Let's see if your mind can keep up with my MEGA mind! Muahahaha!";
-  intro += "\nClick 'OK' to find the game rules.";
+Feel free to try and stop me. Let's see if your mind can keep up with my mine! Muahahaha!
 
-  //show the greeting and the history
+Everything happens in this box — you need nothing else.
+If you see "Don't allow this site to prompt you again" on the screen later, do not tick it, or your browser may stop the game.
+
+Click 'OK' to read the game rules.`;
+
+  // show the greeting and story.
   alert(intro);
 
-  //set the game rules
-  let rules = "\nWe play Rock-Paper-Scissors!";
-  rules += "\nThe rules are pretty simple:";
-  rules += "\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
+  // set the game rules
+  let rules = "\nWe will play Rock-Paper-Scissors!";
+  rules += "\n\nThe rules are pretty simple:";
+  rules += "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
   rules += " A tie changes nothing.";
   rules += `\n2. First to ${WINNING_SCORE} points claims victory.`;
-  rules += "\n3. You may surrender at any time… if you can accept the humiliation.";
+  rules += "\n3. You may surrender at any time…if you can accept the humiliation.";
   rules += "\n4. No cheating, human. I'm watching.";
-  rules += "\nClick 'OK' and let's the battle begin!";
+  rules += "\n\nClick 'OK' and let the battle begin!";
 
-  //show game rules
+  // set game rules
   alert(rules);
 }
 
@@ -283,11 +274,30 @@ function showIntro() {
  * @param {{player: number, computer: number}} score - score after the round
  */
 function describeRound(playerMove, computerMove, outcome, score) {
+  let scoreString = "";
+
+  const gameIsOver =
+    score.player === WINNING_SCORE ||
+    score.computer === WINNING_SCORE;
+
+  // Only show the ordinary score taunt while the game is still in progress.
+  if (!gameIsOver) {
+    if (score.player > score.computer) {
+      scoreString = "\nEnjoy your lead, human… I'm right behind you.";
+    } else if (score.player < score.computer) {
+      scoreString =
+        "\nMuahahaha! Look at that score, human…victory is within my grasp!";
+    } else {
+      scoreString =
+        "\nA draw? How…disappointing, human. Neither of us has won yet.";
+    }
+  }
+
   alert(
     `You played ${formatMove(playerMove)}, ` +
       `I played ${formatMove(computerMove)}.\n` +
       `${OUTCOME_TAUNTS[outcome]}\n\n` +
-      `${formatScore(score)}`
+      `${formatScore(score)}` + scoreString
   );
 }
 
@@ -297,14 +307,16 @@ function describeRound(playerMove, computerMove, outcome, score) {
  */
 function announceWinner(score) {
   alert(
-    `${formatScore(score)}` +
-    `\n\n${score.player === WINNING_SCORE
-      ? "You won… this time. I'll remember every move you made."
-        + "\nVery well, human. Your town survives… this time. Enjoy your victory while you can."
-      : 'Game over, human. I predicted you… every step of the way.'
-        + '\nYour town survives… for now. Consider that a gift from your new ruler.'}` +
-    "\n\nClick 'OK' to end the battle, human."
-  )
+    formatScore(score) +
+      "\n\n" +
+      (score.player === WINNING_SCORE
+        ? "You won…this time. Don't get too comfortable.\n" +
+          "Very well, human. Your town survives…for now. Enjoy your victory while you can."
+        : "Game over, human. I predicted your moves…every step of the way.\n" +
+          "Your town survives…for now. Consider that a gift from your new ruler.") +
+      "\n\n" +
+      "Click 'OK' to end the battle, human."
+  );
 }
 
 /* ============================================================================
@@ -319,24 +331,49 @@ function announceWinner(score) {
  */
 function game() {
   const score = { ...INITIAL_SCORE };
+  let roundNumber = 1;
 
-  // TODO
-  return false;
+  while (score.player < WINNING_SCORE && score.computer < WINNING_SCORE) {
+    const scoreLine = formatScore(score);
+    const playerMove = handleInput(scoreLine, roundNumber);
+
+    if (playerMove === null) {
+      alert(
+        `${formatScore(score)}\n\n` +
+          "Leaving already, human? Very well. " +
+          "I'll consider this an extremely suspicious surrender."
+      );
+      return false;
+    }
+
+    const computerMove = computerPlay();
+    const outcome = playRound(playerMove, computerMove);
+
+    updateScore(score, outcome);
+    describeRound(playerMove, computerMove, outcome, score);
+
+    roundNumber++;
+  }
+
+  announceWinner(score);
+  return true;
 }
 
-/**
+/*
  * Entry point.
  * Offers a rematch only after a game that reached a winner: a player who
  * just cancelled wants to leave, not to be asked again.
  */
 function startGame() {
+  showIntro();
+
   let playAgain = true;
 
   while (playAgain) {
     const reachedAWinner = game();
 
-    // game() creates its own score, so accepting a rematch restarts at 0-0
-    // with no reset needed here.
+    // game() creates its own score, so accepting a rematch
+    // restarts at 0-0 with no reset needed here.
     playAgain = reachedAWinner && confirm("Do you dare to face me again?");
   }
 }
