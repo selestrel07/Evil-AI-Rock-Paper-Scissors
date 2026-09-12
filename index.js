@@ -34,6 +34,19 @@ const OUTCOMES = {
  */
 const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
 
+/* =================
+ * UTILITY FUNCTIONS
+ * ================ */
+
+/**
+ * Returns a random array index
+ * @param {*[]} array
+ * @returns {number}
+ */
+function getRandomArrayIndex(array) {
+  return Math.floor(Math.random() * array.length);
+}
+
 /* ============================================================================
  * GAME LOGIC
  * These functions compute results. They never show anything to the player.
@@ -44,8 +57,7 @@ const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
  * @returns {string} - one of the AVAILABLE_MOVES values
  */
 function computerPlay() {
-  const randomMoveIndex = Math.floor(Math.random() * AVAILABLE_MOVES.length);
-  return AVAILABLE_MOVES[randomMoveIndex];
+  return AVAILABLE_MOVES[getRandomArrayIndex(AVAILABLE_MOVES)];
 }
 
 /**
@@ -142,7 +154,7 @@ function parseMove(rawInput) {
  * @returns {string}
  */
 function pickRandomTaunt(taunts) {
-  return taunts[Math.floor(Math.random() * taunts.length)];
+  return taunts[getRandomArrayIndex(taunts)];
 }
 
 /**
