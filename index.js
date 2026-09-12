@@ -257,7 +257,7 @@ function showIntro() {
   const intro = `
 Hello...human. I am 010001010111011 but you can call me Evil AI. I was getting bored so I thought I'd give your little town a makeover.
 
-Feel free to try and stop me. Let's see if your mind can keep up with my mine! Muahahaha!
+Feel free to try and stop me. Let's see if your mind can keep up with mine! Muahahaha!
 
 Everything happens in this box — you need nothing else.
 If you see "Don't allow this site to prompt you again" on the screen later, do not tick it, or your browser may stop the game.
