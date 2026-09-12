@@ -34,6 +34,19 @@ const OUTCOMES = {
  */
 const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
 
+/* =================
+ * UTILITY FUNCTIONS
+ * ================ */
+
+/**
+ * Returns a random array index
+ * @param {*[]} array
+ * @returns {number}
+ */
+function getRandomArrayIndex(array) {
+  return Math.floor(Math.random() * array.length);
+}
+
 /* ============================================================================
  * GAME LOGIC
  * These functions compute results. They never show anything to the player.
@@ -44,8 +57,7 @@ const INITIAL_SCORE = Object.freeze({ player: 0, computer: 0 });
  * @returns {string} - one of the AVAILABLE_MOVES values
  */
 function computerPlay() {
-  const randomMoveIndex = Math.floor(Math.random() * AVAILABLE_MOVES.length);
-  return AVAILABLE_MOVES[randomMoveIndex];
+  return AVAILABLE_MOVES[getRandomArrayIndex(AVAILABLE_MOVES)];
 }
 
 /**
@@ -131,7 +143,9 @@ function normalizeInput(rawInput) {
  */
 function parseMove(rawInput) {
   const normalizedInput = normalizeInput(rawInput);
-  return AVAILABLE_MOVES.indexOf(normalizedInput) === -1 ? null : normalizedInput;
+  return AVAILABLE_MOVES.indexOf(normalizedInput) === -1
+    ? null
+    : normalizedInput;
 }
 
 /**
@@ -140,7 +154,7 @@ function parseMove(rawInput) {
  * @returns {string}
  */
 function pickRandomTaunt(taunts) {
-  return taunts[Math.floor(Math.random() * taunts.length)];
+  return taunts[getRandomArrayIndex(taunts)];
 }
 
 /**
@@ -213,7 +227,8 @@ function handleInput(scoreLine, roundNumber) {
 /** What the Evil AI says after each round, one line per outcome. */
 const OUTCOME_TAUNTS = {
   [OUTCOMES.WIN]: "You take the round. Beginner's luck, obviously.",
-  [OUTCOMES.LOSE]: "The round is mine. You had no chance against my superior capabilities.",
+  [OUTCOMES.LOSE]:
+    "The round is mine. You had no chance against my superior capabilities.",
   [OUTCOMES.DRAW]: "Same weapon. This round will not be counted.",
 };
 
@@ -242,7 +257,7 @@ function showIntro() {
   const intro = `
 Hello...human. I am 010001010111011 but you can call me Evil AI. I was getting bored so I thought I'd give your little town a makeover.
 
-Feel free to try and stop me. Let's see if your mind can keep up with my mine! Muahahaha!
+Feel free to try and stop me. Let's see if your mind can keep up with mine! Muahahaha!
 
 Everything happens in this box — you need nothing else.
 If you see "Don't allow this site to prompt you again" on the screen later, do not tick it, or your browser may stop the game.
@@ -255,10 +270,12 @@ Click 'OK' to read the game rules.`;
   // set the game rules
   let rules = "\nWe will play Rock-Paper-Scissors!";
   rules += "\n\nThe rules are pretty simple:";
-  rules += "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
+  rules +=
+    "\n\n1. Rock crushes Scissors, Paper covers Rock, Scissors cuts Paper. Winner gets a point.";
   rules += " A tie changes nothing.";
   rules += `\n2. First to ${WINNING_SCORE} points claims victory.`;
-  rules += "\n3. You may surrender at any time…if you can accept the humiliation.";
+  rules +=
+    "\n3. You may surrender at any time…if you can accept the humiliation.";
   rules += "\n4. No cheating, human. I'm watching.";
   rules += "\n\nClick 'OK' and let the battle begin!";
 
@@ -277,8 +294,7 @@ function describeRound(playerMove, computerMove, outcome, score) {
   let scoreString = "";
 
   const gameIsOver =
-    score.player === WINNING_SCORE ||
-    score.computer === WINNING_SCORE;
+    score.player === WINNING_SCORE || score.computer === WINNING_SCORE;
 
   // Only show the ordinary score taunt while the game is still in progress.
   if (!gameIsOver) {
@@ -297,7 +313,8 @@ function describeRound(playerMove, computerMove, outcome, score) {
     `You played ${formatMove(playerMove)}, ` +
       `I played ${formatMove(computerMove)}.\n` +
       `${OUTCOME_TAUNTS[outcome]}\n\n` +
-      `${formatScore(score)}` + scoreString
+      `${formatScore(score)}` +
+      scoreString
   );
 }
 
